@@ -2,59 +2,128 @@ const csv = require('csv-parser');
 const fs = require('fs');
 const db = require('./index.js');
 var count = 0;
-var photo;
+var photosByReview = {};
+var updatePromises = [];
 
-fs.createReadStream('../dataFiles/reviews_photos.csv')
-  .pipe(csv())
-  .on('data', (data) => {
-    count++;
-    newPhoto = (parsePhoto(data));
-    if (!newPhoto) {
-      return; //createPhoto returned null bc of bad url
+const processFile = async () => {
+  const parser = fs.createReadStream('../dataFiles/reviews_photos.csv').pipe(csv());
+  for await (const photo of parser) {
+    count++
+    if (!photosByReview[photo.review_id]) {
+      photosByReview[photo.review_id] = [parsePhoto(photo)];
+    } else {
+      photosByReview[photo.review_id].push(parsePhoto(photo));
     }
-    db.Review.find({review_id: newPhoto.review_id})
-    .then((reviews) => {
-      //only care to do anything with photos that actually reference reviews that exist
-      //if a photo's review_id does not exist, do not import it
-      if (reviews.length) {
-        if (reviews.length === 1) {
-          //if a photo with that id already exists, replace the id
-          reviews[0].photos.foreach((photo) => {
-            if (photo.id = newPhoto.id) {
-              newPhoto.id = mongoose.Types.ObjectId().toString();
-            }
-          });
-          //update the review records to have the new photo in it's photo's array
-          if (count % 500000 === 0) {
-            reviews[0].updateOne({photos: reviews[0].photos.push(newPhoto)})
-            .then(() => {
-              console.log('500000 done');
-            })
-            .catch((err) => {
-              console.log('error: ', err);
-              console.log('record: ', newPhoto);
-            });
-          }
-          else {
-            reviews[0].updateOne({photos: reviews[0].photos.push(newPhoto)})
-            .catch((err) => {
-              console.log('error: ', err);
-              console.log('record: ', newPhoto);
-            });
-          }
-        }
-        else if (review.length > 1) {
-          //don't attach the photo to any of the duplicate id reviews. Instead make a note of the duplicate review id for later clean up
-
-        }
+    if (count % 100000 === 0 || count === 2742832) {
+      for (var k in photosByReview) {
+        updatePromises.push(db.Review.update({review_id: k}, {photos: photosByReview[k]}));
       }
-    })
-  })
-  .on('end', () => {
-    console.log('ended');
-  });
+      await Promise.all(updatePromises);
+      console.log('saved');
+      photosByReview = {};
+      updatePromises = [];
+    }
+  }
+  return true;
+}
+
+(async () => {
+  const finished = await processFile();
+  console.log('finished: ', finished);
+})()
+
+
+
+// fs.createReadStream('../dataFiles/reviews_photos.csv')
+//   .pipe(csv())
+//   .on('data', (data) => {
+//     count++;
+//     let newPhoto = (parsePhoto(data));
+//     //only save photos with valid urls
+//     if (newPhoto) {
+//       let photo = new db.Photo(newPhoto);
+//       photo.save()
+//         .then(() => {
+//           if (count % 500000 === 0) {
+//             console.log('500000 saved');
+//           } else if (count === 2742832) {
+//             console.log('last record');
+//           }
+//         })
+//         .catch((err) => {
+//           console.log('error saving: ', err);
+//           console.log('erroring record: ', photo);
+//         })
+//     }
+//   })
+//   .on('end', () => {
+//     console.log('ended');
+//   });
 
 
 const parsePhoto = (data) => {
+  data.photo_id = Number.parseInt(data.id.trim());
+  data.review_id = Number.parseInt(data.review_id.trim());
+  data.url = data.url.trim();
+  //basic URL validation
+  var urlSections = data.url.split('/');
+  if (urlSections.length < 3) {
+    return null;
+  }
+  if (urlSections[0] !== 'https:' && urlSections[0] !== 'http:') {
+    return null;
+  }
+  if (urlSections[1] !== '') {
+    return null;
+  }
+  var hostSections = urlSections[2].split('.');
+  if (hostSections.length < 2) {
+    return null;
+  }
+  for (i = 0; i < hostSections.length; i++) {
+    if (! alphabet[hostSections[i].charAt(0)]) {
+      return null;
+    }
+  }
+  let photo = new db.Photo(data);
+  return photo;
+};
 
+const alphabet = {
+  'a': 1,
+  'b': 1,
+  'c': 1,
+  'd': 1,
+  'e': 1,
+  'f': 1,
+  'g': 1,
+  'h': 1,
+  'i': 1,
+  'j': 1,
+  'k': 1,
+  'l': 1,
+  'm': 1,
+  'n': 1,
+  'o': 1,
+  'p': 1,
+  'q': 1,
+  'r': 1,
+  's': 1,
+  't': 1,
+  'u': 1,
+  'v': 1,
+  'w': 1,
+  'x': 1,
+  'y': 1,
+  'z': 1,
+  1: 1,
+  2: 1,
+  3: 1,
+  4: 1,
+  5: 1,
+  6: 1,
+  7: 1,
+  8: 1,
+  9: 1,
+  0: 1
 };

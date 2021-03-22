@@ -3,11 +3,11 @@ const fs = require('fs');
 const db = require('./index.js');
 var count = 0;
 
-fs.createReadStream('../dataFiles/reviews_photos.csv')
+fs.createReadStream('../dataFiles/reviews.csv')
   .pipe(csv())
   .on('data', (data) => {
     count++;
   })
   .on('end', () => {
-    console.log('ended: ', count);
+    console.log('end: ', count);
   });

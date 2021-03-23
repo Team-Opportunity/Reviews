@@ -1,6 +1,6 @@
 const csv = require('csv-parser');
 const fs = require('fs');
-const db = require('./index.js');
+const db = require('../db/index.js');
 var count = 0;
 var review;
 

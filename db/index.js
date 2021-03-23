@@ -38,31 +38,50 @@ let recommendedMetadataSchema = mongoose.Schema({
 });
 
 let fitSchema = mongoose.Schema({
-  id: Number,
+  id: {type: Number, index: true},
   product_id: {type: Number, index: true},
   totalScore: Number,
   numReviews: Number
 });
 
 let lengthSchema = mongoose.Schema({
-  id: Number,
+  id: {type: Number, index: true},
   product_id: {type: Number, index: true},
   totalScore: Number,
   numReviews: Number
 });
 
 let comfortSchema = mongoose.Schema({
-  id: Number,
+  id: {type: Number, index: true},
   product_id: {type: Number, index: true},
   totalScore: Number,
   numReviews: Number
 });
 
 let qualitySchema = mongoose.Schema({
-  id: Number,
+  id: {type: Number, index: true},
   product_id: {type: Number, index: true},
   totalScore: Number,
   numReviews: Number
+});
+
+let sizeSchema = mongoose.Schema({
+  id: {type: Number, index: true},
+  product_id: {type: Number, index: true},
+  totalScore: Number,
+  numReviews: Number
+});
+
+let widthSchema = mongoose.Schema({
+  id: {type: Number, index: true},
+  product_id: {type: Number, index: true},
+  totalScore: Number,
+  numReviews: Number
+});
+
+idToCharSchema =mongoose.Schema({
+  id: {type: Number, index: true},
+  name: String
 });
 
 let Photo = mongoose.model('Photo', photoSchema);
@@ -73,6 +92,9 @@ let Fit = mongoose.model('Fit', fitSchema);
 let Length = mongoose.model('Length', lengthSchema);
 let Comfort = mongoose.model('Comfort', comfortSchema);
 let Quality = mongoose.model('Quality', qualitySchema);
+let Size = mongoose.model('Size', sizeSchema);
+let Width = mongoose.model('Width', widthSchema);
+let IdToChar = mongoose.model('IdToChar', idToCharSchema);
 
 module.exports.Photo = Photo;
 module.exports.Review = Review;
@@ -82,4 +104,7 @@ module.exports.Fit = Fit;
 module.exports.Length = Length;
 module.exports.Comfort = Comfort;
 module.exports.Quality = Quality;
+module.exports.Size = Size;
+module.exports.Width = Width;
+module.exports.IdToChar = IdToChar;
 

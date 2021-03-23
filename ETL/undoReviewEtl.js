@@ -1,5 +1,5 @@
 const csv = require('csv-parser');
-const db = require('./index.js');
+const db = require('../db/index.js');
 
 // db.Review.deleteMany({recommend: true})
 //   .then((results) => {

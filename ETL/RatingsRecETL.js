@@ -1,4 +1,4 @@
-const db = require('./index.js');
+const db = require('../db/index.js');
 
 const ratingsAndRec = async () => {
   var ratings = {};

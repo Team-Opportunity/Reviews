@@ -1,4 +1,4 @@
-// const db = require('./index.js');
+// const db = require('../db/index.js');
 
 // //Ratings
 // db.RatingsMeta.deleteMany({product_id: {$gte: 0}})

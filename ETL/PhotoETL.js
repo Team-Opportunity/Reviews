@@ -1,6 +1,6 @@
 const csv = require('csv-parser');
 const fs = require('fs');
-const db = require('./index.js');
+const db = require('../db/index.js');
 var count = 0;
 var photosByReview = {};
 var updatePromises = [];
@@ -33,34 +33,6 @@ const processFile = async () => {
   const finished = await processFile();
   console.log('finished: ', finished);
 })()
-
-
-
-// fs.createReadStream('../dataFiles/reviews_photos.csv')
-//   .pipe(csv())
-//   .on('data', (data) => {
-//     count++;
-//     let newPhoto = (parsePhoto(data));
-//     //only save photos with valid urls
-//     if (newPhoto) {
-//       let photo = new db.Photo(newPhoto);
-//       photo.save()
-//         .then(() => {
-//           if (count % 500000 === 0) {
-//             console.log('500000 saved');
-//           } else if (count === 2742832) {
-//             console.log('last record');
-//           }
-//         })
-//         .catch((err) => {
-//           console.log('error saving: ', err);
-//           console.log('erroring record: ', photo);
-//         })
-//     }
-//   })
-//   .on('end', () => {
-//     console.log('ended');
-//   });
 
 
 const parsePhoto = async (data) => {

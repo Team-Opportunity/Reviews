@@ -4,15 +4,17 @@ const db = require('./index.js');
 var count = 0;
 var photosByReview = {};
 var updatePromises = [];
+var review_id;
 
 const processFile = async () => {
   const parser = fs.createReadStream('../dataFiles/reviews_photos.csv').pipe(csv());
   for await (const photo of parser) {
-    count++
-    if (!photosByReview[photo.review_id]) {
-      photosByReview[photo.review_id] = [parsePhoto(photo)];
+    count++;
+    review_id = photo.review_id;
+    if (!photosByReview[review_id]) {
+      photosByReview[review_id] = [await parsePhoto(photo)];
     } else {
-      photosByReview[photo.review_id].push(parsePhoto(photo));
+      photosByReview[review_id].push(await parsePhoto(photo));
     }
     if (count % 100000 === 0 || count === 2742832) {
       for (var k in photosByReview) {
@@ -61,9 +63,9 @@ const processFile = async () => {
 //   });
 
 
-const parsePhoto = (data) => {
-  data.photo_id = Number.parseInt(data.id.trim());
-  data.review_id = Number.parseInt(data.review_id.trim());
+const parsePhoto = async (data) => {
+  delete data.id;
+  delete data.review_id;
   data.url = data.url.trim();
   //basic URL validation
   var urlSections = data.url.split('/');
@@ -85,8 +87,8 @@ const parsePhoto = (data) => {
       return null;
     }
   }
-  let photo = new db.Photo(data);
-  return photo;
+  var photo = new db.Photo(data);
+  return photo.save();
 };
 
 const alphabet = {

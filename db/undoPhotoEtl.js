@@ -1,9 +1,9 @@
-const db = require('./index.js');
+// const db = require('./index.js');
 
-db.Photo.deleteMany({url: /^http/})
-  .then(() => {
-     return db.Photo.countDocuments({url: /^http/});
-   })
-   .then((results) => {
-     console.log('remaining photo records: ', results);
-   })
+// db.Photo.deleteMany({url: /^http/})
+//   .then(() => {
+//      return db.Photo.countDocuments({url: /^http/});
+//    })
+//    .then((results) => {
+//      console.log('remaining photo records: ', results);
+//    })

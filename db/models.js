@@ -2,7 +2,7 @@ const db = require('./index.js');
 const mongoose = require('mongoose');
 
 const getReviews = () => {
-
+  //TODO;
 };
 
 const getMetadata = async (product_id) => {
@@ -59,6 +59,16 @@ const getMetadata = async (product_id) => {
     }
   }
   return res;
+};
+
+const addReview = async (review) => {
+  //TODO
+};
+
+const markHelpful = async (review_id) => {
+  let res = await db.Review.findOneAndUpdate({review_id: review_id}, {$inc: {helpfulness: 1}}, {new: true});
+  return res;
 }
 
 module.exports.getMetadata = getMetadata;
+module.exports.markHelpful = markHelpful;

@@ -27,7 +27,12 @@ app.post('/reviews', async (req, res) => {
 });
 
 app.put('/reviews/:review_id/helpful', async (req, res) => {
-  //TODO
+  let result = await models.markHelpful(req.params.review_id);
+  if (result) {
+    res.sendStatus(204);
+  } else {
+    res.sendStatus(400);
+  }
 });
 
 app.put('/reviews/:review_id/report', async (req, res) => {

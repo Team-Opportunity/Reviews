@@ -1,8 +1,29 @@
 const db = require('./index.js');
 const mongoose = require('mongoose');
 
-const getReviews = () => {
-  //TODO;
+const getReviews = async (product_id, sort, page = 1, count = 5) => {
+  //for now, do a simple mongo sort. Can come back alter and make more performant
+  let docs;
+  if (sort === 'newest') {
+    docs = await db.Review.find({product_id: product_id, reported: false}).sort({date: 'desc'}).limit(page * count);
+  } else if (sort === 'helpful') {
+    docs = await db.Review.find({product_id: product_id, reported: false}).sort({helpfulness: 'desc'}).limit(page * count);
+  } else {
+    docs = await db.Review.find({product_id: product_id, reported: false}).limit(page * count);
+  }
+  if (page > 1) {
+    docs = docs.slice(count * (page - 1));
+  }
+  let result = docs.map((doc) => {
+    return doc.toObject();
+  });
+  result.forEach((res) => {
+    delete res._id;
+    delete res.__v;
+    delete res.product_id;
+    res.date = res.date.toString();
+  });
+  return result;
 };
 
 const getMetadata = async (product_id) => {
@@ -61,8 +82,24 @@ const getMetadata = async (product_id) => {
   return res;
 };
 
+//review param is an object with field corresponding to the info in the post request
 const addReview = async (review) => {
-  //TODO
+  //get next review id and increment document
+  //create new review with review_id, product_id
+  //other fieldsss equal to the input or empty string (except recomend)
+  //set fields respone, reviewer_name to empty string
+  //set date = new date now
+  //set helpfulness to 0
+  //set reported to false
+  //set photos to input or empty array if there is no input
+  //update ratings with the given rating
+    //create a new doc if product hasn't been rated before
+  //update recommend with the given data
+    //create a new doc if product hasn't been rated before
+  //for each characteristic
+    //use idtoCHar schema to get which characteristic is being rated
+    //update that characteristic schema/product with the given data
+    //create a new doc if not found
 };
 
 const markHelpful = async (review_id) => {
@@ -70,5 +107,13 @@ const markHelpful = async (review_id) => {
   return res;
 }
 
+const report = async (review_id) => {
+  let res = await db.Review.findOneAndUpdate({review_id: review_id}, {reported: true}, {new: true});
+  return res;
+};
+
+module.exports.getReviews = getReviews;
 module.exports.getMetadata = getMetadata;
+module.exports.addReview = addReview;
 module.exports.markHelpful = markHelpful;
+module.exports.report = report;

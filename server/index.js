@@ -9,8 +9,15 @@ let app = express();
 app.use(bodyParser.json());
 
 //routes
-app.get('/reviews/', async (req, res) => {
-  //TODO
+app.get('/reviews', async (req, res) => {
+  console.log(req.body);
+  let result = await models.getReviews(req.body.product_id, req.body.sort, req.body.page, req.body.count);
+  res.status(200).send({
+    product: req.body.product_id,
+    page: req.body.page,
+    count: req.body.count,
+    results: result
+  });
 });
 
 app.get('/reviews/meta', async (req, res) => {
@@ -36,7 +43,12 @@ app.put('/reviews/:review_id/helpful', async (req, res) => {
 });
 
 app.put('/reviews/:review_id/report', async (req, res) => {
-  //TODO
+  let result = await models.report(req.params.review_id);
+  if (result) {
+    res.sendStatus(204);
+  } else {
+    res.sendStatus(400);
+  }
 });
 
 let port = 3029;

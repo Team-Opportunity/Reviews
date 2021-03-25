@@ -15,7 +15,7 @@ let reviewSchema = mongoose.Schema({
   recommend: Boolean,
   response: String,
   body: String,
-  date: Number,
+  date: Date,
   reviewer_name: String,
   helpfulness: Number,
   reported: Boolean,
@@ -84,6 +84,10 @@ idToCharSchema =mongoose.Schema({
   name: String
 });
 
+reviewIdSchema = mongoose.Schema({
+  nextId: Number
+});
+
 let Photo = mongoose.model('Photo', photoSchema);
 let Review = mongoose.model('Review', reviewSchema);
 let RatingsMeta = mongoose.model('RatingsMeta', ratingsMetadataSchema);
@@ -95,6 +99,7 @@ let Quality = mongoose.model('Quality', qualitySchema);
 let Size = mongoose.model('Size', sizeSchema);
 let Width = mongoose.model('Width', widthSchema);
 let IdToChar = mongoose.model('IdToChar', idToCharSchema);
+let ReviewId = mongoose.model('ReviewId', reviewIdSchema);
 
 module.exports.Photo = Photo;
 module.exports.Review = Review;
@@ -107,4 +112,5 @@ module.exports.Quality = Quality;
 module.exports.Size = Size;
 module.exports.Width = Width;
 module.exports.IdToChar = IdToChar;
+module.exports.ReviewId = ReviewId;
 

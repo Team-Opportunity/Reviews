@@ -85,21 +85,74 @@ const getMetadata = async (product_id) => {
 //review param is an object with field corresponding to the info in the post request
 const addReview = async (review) => {
   //get next review id and increment document
-  //create new review with review_id, product_id
-  //other fieldsss equal to the input or empty string (except recomend)
-  //set fields respone, reviewer_name to empty string
-  //set date = new date now
-  //set helpfulness to 0
-  //set reported to false
-  //set photos to input or empty array if there is no input
-  //update ratings with the given rating
-    //create a new doc if product hasn't been rated before
-  //update recommend with the given data
-    //create a new doc if product hasn't been rated before
-  //for each characteristic
-    //use idtoCHar schema to get which characteristic is being rated
-    //update that characteristic schema/product with the given data
-    //create a new doc if not found
+  let nextId = await db.ReviewId.findOneAndUpdate({nextId: {$gte: 0}}, {$inc: {nextId: 1}}, {new: false, lean: true});
+  let newReview = {
+    review_id: nextId.nextId,
+    product_id: review.product_id,
+    rating: review.rating,
+    summary: review.summary,
+    recommend: review.recommend,
+    response: '',
+    body: review.body,
+    date: new Date(),
+    reviewer_name: '',
+    helpfulness: 0,
+    reported: false,
+    photos: review.photos
+  };
+  let newReviewDoc = new db.Review(newReview);
+  let modelChanges = [newReviewDoc.save()];
+  let ratingUpdate = {};
+  ratingUpdate[review.rating] = 1;
+  let recommendUpdate = {};
+  recommendUpdate[review.recommend] = 1;
+  //determine whether product has been reviewed before, so we know if updates are needed or whole new documents
+  let alreadyReviewed = await db.Review.findOne({product_id: review.product_id});
+  if (alreadyReviewed) {
+    //updates only
+    //ratings
+    modelChanges.push(db.RatingsMeta.findOneAndUpdate({product_Id: review.product_id}, {$inc: ratingUpdate}));
+    //recommend
+    modelChanges.push(db.RecMeta.findOneAndUpdate({product_Id: review.product_id}, {$inc: ratingUpdate}));
+  } else {
+    //ratings
+    for (var i = 1; i <= 5; i++) {
+      if (!ratingUpdate[i]) {
+        ratingUpdate[i] = 0;
+      }
+    }
+    let newRating = new db.RatingsMeta(ratingUpdates);
+    modelChanges.push(newRating.save());
+    //recommend
+    for (i = 0; i <= 1; i++) {
+      if (!recommendUpdate[i]) {
+        recommendUpdate[i] = 0
+      }
+    }
+    let newRec = new db.RecMeta(recommendUpdates);
+    modelChanges.push(newRec.save());
+  }
+  //characteristic ids all already exist when a product is created, and we are not dealing with product generation in this project
+  //if we were, we would need to generate those upon product creation and create docs for all the characteristic schemas, and one for the idToChar schema
+  //all this to say, whether or not a product has been reviewed before, it's characteristic documents will already exist
+  for (var k in review.characteristics) {
+    let doc = db.IdToChar.findOne({id: k});
+    if (doc.name === 'fit') {
+      modelChanges.push(db.Fit.findOneAndUpdate({id: k}, {$inc: {totalScore: review.characteristics[k], numReview: 1}}));
+    } else if (doc.name === 'length') {
+      modelChanges.push(db.Length.findOneAndUpdate({id: k}, {$inc: {totalScore: review.characteristics[k], numReview: 1}}));
+    } else if (doc.name === 'comfort') {
+      modelChanges.push(db.Comfort.findOneAndUpdate({id: k}, {$inc: {totalScore: review.characteristics[k], numReview: 1}}));
+    } else if (doc.name === 'quality') {
+      modelChanges.push(db.Quality.findOneAndUpdate({id: k}, {$inc: {totalScore: review.characteristics[k], numReview: 1}}));
+    } else if (doc.name === 'size') {
+      modelChanges.push(db.Size.findOneAndUpdate({id: k}, {$inc: {totalScore: review.characteristics[k], numReview: 1}}));
+    } else {
+      modelChanges.push(db.Width.findOneAndUpdate({id: k}, {$inc: {totalScore: review.characteristics[k], numReview: 1}}));
+    }
+  }
+  await Promise.all(modelChanges);
+  return;
 };
 
 const markHelpful = async (review_id) => {

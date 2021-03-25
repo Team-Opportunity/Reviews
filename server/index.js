@@ -10,7 +10,6 @@ app.use(bodyParser.json());
 
 //routes
 app.get('/reviews', async (req, res) => {
-  console.log(req.body);
   let result = await models.getReviews(req.body.product_id, req.body.sort, req.body.page, req.body.count);
   res.status(200).send({
     product: req.body.product_id,
@@ -30,7 +29,11 @@ app.get('/reviews/meta', async (req, res) => {
 });
 
 app.post('/reviews', async (req, res) => {
-  //TODO
+  if (!req.body.photos) {
+    req.body.photos = [];
+  }
+  await models.addReview(req.body);
+  res.sendStatus(201);
 });
 
 app.put('/reviews/:review_id/helpful', async (req, res) => {

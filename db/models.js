@@ -136,7 +136,7 @@ const addReview = async (review) => {
   //if we were, we would need to generate those upon product creation and create docs for all the characteristic schemas, and one for the idToChar schema
   //all this to say, whether or not a product has been reviewed before, it's characteristic documents will already exist
   for (var k in review.characteristics) {
-    let doc = db.IdToChar.findOne({id: k});
+    let doc = await db.IdToChar.findOne({id: k});
     if (doc.name === 'fit') {
       modelChanges.push(db.Fit.findOneAndUpdate({id: k}, {$inc: {totalScore: review.characteristics[k], numReview: 1}}));
     } else if (doc.name === 'length') {

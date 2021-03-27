@@ -1,0 +1,65 @@
+config:
+  target: "http://localhost:3029"
+  phases:
+    - duration: 5
+      arrivalRate: 1
+      name:
+scenarios:
+    # - name: "get MetaData"
+    #   flow:
+    #     - get:
+    #         url: "/reviews/meta"
+    #         json:
+    #           product_id: 999910
+
+    # - name: "mark helpful"
+    #   flow:
+    #     - put:
+    #         url: "/reviews/5777916/helpful"
+
+    # - name: "report"
+    #   flow:
+    #     - put:
+    #         url: "/reviews/5777916/report"
+
+    # - name: "get reviews unsorted with default page counts"
+    #   flow:
+    #     - get:
+    #         url: "/reviews"
+    #         json:
+    #           product_id: 999912
+
+    # - name: "get reviews sorted by newest with default page counts"
+    #   flow:
+    #     - get:
+    #         url: "/reviews"
+    #         json:
+    #           product_id: 999913
+    #           sort: "newest"
+
+    # - name: "get reviews sorted by helpful with default page counts"
+    #   flow:
+    #     - get:
+    #         url: "/reviews"
+    #         json:
+    #           product_id: 999911
+    #           sort: "helpful"
+
+    - name: "add review"
+      flow:
+        - post:
+            url: "/reviews"
+            json:
+              product_id: 999945
+              rating: 4
+              summary: "pipitty popitty give me the zopitty"
+              body: "catch you on the flippity flip"
+              recommend: true
+              name: "Michael Scott"
+              email: "manager@dundermifflin.com"
+              characteristics: {
+                "3347256": 4,
+                "3347257": 3,
+                "3347258": 5,
+                "3347259": 4
+              }

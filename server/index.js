@@ -7,6 +7,7 @@ let app = express();
 //middleware
 //app.use(express.static(__dirname + '<location of index.htmlfile>'));
 app.use(bodyParser.json());
+//app.use(bodyParser.urlencoded());
 
 //routes
 app.get('/reviews', async (req, res) => {
